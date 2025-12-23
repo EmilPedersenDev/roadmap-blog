@@ -4,6 +4,12 @@
       <NuxtLink to="/" class="navbar-brand">Roadmap Blog</NuxtLink>
       <div class="navbar-links">
         <NuxtLink to="/" class="navbar-link">Blogs</NuxtLink>
+        <NuxtLink 
+          to="/login" 
+          class="login-button"
+        >
+          Login
+        </NuxtLink>
       </div>
     </div>
   </nav>
@@ -57,6 +63,31 @@
 
 .navbar-link.router-link-active {
   color: #3b82f6;
+}
+
+.login-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  background-color: #3b82f6;
+  color: white;
+}
+
+.login-button:hover {
+  background-color: #2563eb;
+}
+
+.logout-button {
+  background-color: #6b7280;
+}
+
+.logout-button:hover {
+  background-color: #4b5563;
 }
 </style>
 
