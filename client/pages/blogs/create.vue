@@ -1,6 +1,11 @@
 <template>
   <div class="create-blog-page">
-    <div class="container">
+    <div v-if="checkingAuth" class="container">
+      <div class="loading-state">
+        <p>Loading...</p>
+      </div>
+    </div>
+    <div v-else class="container">
       <div class="page-header">
         <h1>Create Blog</h1>
         <NuxtLink to="/" class="back-button">← Back to Blogs</NuxtLink>
@@ -56,6 +61,18 @@
 </template>
 
 <script setup lang="ts">
+const { isAuthenticated, loading } = useAuth()
+const route = useRoute()
+const checkingAuth = computed(() => loading.value)
+
+// Check authentication when loading is complete
+watch(loading, async (isLoading) => {
+  if (!isLoading && !isAuthenticated.value) {
+    // Redirect to login with the current page as redirect target
+    await navigateTo(`/login?redirect=${encodeURIComponent(route.fullPath)}`)
+  }
+}, { immediate: true })
+
 const form = ref({
   title: '',
   excerpt: '',
@@ -207,6 +224,12 @@ const handleCancel = () => {
 .submit-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
 }
 </style>
 

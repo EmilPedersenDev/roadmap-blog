@@ -5,15 +5,32 @@
       <div class="navbar-links">
         <NuxtLink to="/" class="navbar-link">Blogs</NuxtLink>
         <NuxtLink 
+          v-if="!isAuthenticated"
           to="/login" 
           class="login-button"
         >
           Login
         </NuxtLink>
+        <button
+          v-else
+          @click="handleLogout"
+          class="login-button logout-button"
+        >
+          Logout
+        </button>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup lang="ts">
+const { isAuthenticated, signOut } = useAuth()
+
+const handleLogout = async () => {
+  await signOut()
+  await navigateTo('/')
+}
+</script>
 
 <style scoped>
 .navbar {

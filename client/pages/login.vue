@@ -100,15 +100,15 @@
 </template>
 
 <script setup lang="ts">
-import { createSupabaseClient } from '~/config/supabase-client'
+import { getSupabaseClient } from '~/config/supabase-client'
 
-const supabase = createSupabaseClient()
+const supabase = getSupabaseClient()
+const { setSession, isAuthenticated } = useAuth()
 
 // Redirect if already logged in
 const user = ref(null)
-onMounted(async () => {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (session?.user) {
+onBeforeMount(async () => {
+  if (isAuthenticated.value) {
     const redirectTo = useRoute().query.redirect as string || '/'
     await navigateTo(redirectTo)
   }
@@ -146,8 +146,13 @@ const handleLogin = async () => {
       return
     }
 
-    if (data.user) {
-      await navigateTo('/')
+    if (data.user && data.session) {
+      // Update global auth state with the session from response
+      await setSession(data.session)
+      
+      // Redirect to the page they were trying to access, or home
+      const redirectTo = useRoute().query.redirect as string || '/'
+      await navigateTo(redirectTo)
     }
   } catch (err) {
     error.value = 'An unexpected error occurred. Please try again.'
@@ -163,9 +168,15 @@ const handleSignup = async () => {
   signupSuccess.value = false
 
   try {
+    // Get the current origin for the redirect URL
+    const redirectUrl = `${window.location.origin}/auth/callback`
+    
     const { data, error: signupErr } = await supabase.auth.signUp({
       email: signupForm.value.email,
-      password: signupForm.value.password
+      password: signupForm.value.password,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
     })
 
     if (signupErr) {
@@ -174,6 +185,11 @@ const handleSignup = async () => {
     }
 
     if (data.user) {
+      // Update global auth state if session exists (usually requires email confirmation)
+      if (data.session) {
+        await setSession(data.session)
+      }
+      
       signupSuccess.value = true
       // Clear form
       signupForm.value = { email: '', password: '' }
