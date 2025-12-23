@@ -100,6 +100,20 @@
 </template>
 
 <script setup lang="ts">
+import { createSupabaseClient } from '~/config/supabase-client'
+
+const supabase = createSupabaseClient()
+
+// Redirect if already logged in
+const user = ref(null)
+onMounted(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user) {
+    const redirectTo = useRoute().query.redirect as string || '/'
+    await navigateTo(redirectTo)
+  }
+})
+
 const form = ref({
   email: '',
   password: ''
@@ -122,11 +136,19 @@ const handleLogin = async () => {
   error.value = null
 
   try {
-    console.log(form.value, 'logging in');
+    const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      email: form.value.email,
+      password: form.value.password
+    })
 
-    // Redirect to the page they were trying to access, or home
-    const redirectTo = useRoute().query.redirect as string || '/'
-    await navigateTo(redirectTo)
+    if (loginError) {
+      error.value = loginError.message
+      return
+    }
+
+    if (data.user) {
+      await navigateTo('/')
+    }
   } catch (err) {
     error.value = 'An unexpected error occurred. Please try again.'
     console.error('Login error:', err)
@@ -141,12 +163,27 @@ const handleSignup = async () => {
   signupSuccess.value = false
 
   try {
-    console.log(signupForm.value, 'signing up');
-    
-    signupSuccess.value = true
-    // Clear form
-    signupForm.value = { email: '', password: '' }
-    mode.value = 'login'
+    const { data, error: signupErr } = await supabase.auth.signUp({
+      email: signupForm.value.email,
+      password: signupForm.value.password
+    })
+
+    if (signupErr) {
+      signupError.value = signupErr.message
+      return
+    }
+
+    if (data.user) {
+      signupSuccess.value = true
+      // Clear form
+      signupForm.value = { email: '', password: '' }
+      
+      // Switch to login mode after successful signup
+      setTimeout(() => {
+        mode.value = 'login'
+        signupSuccess.value = false
+      }, 2000)
+    }
   } catch (err) {
     signupError.value = 'An unexpected error occurred. Please try again.'
     console.error('Signup error:', err)
