@@ -1,5 +1,5 @@
-import { UserModel } from "../models/user-model";
-import { User } from "../types";
+import { UserModel } from "../models/user-model.js";
+import { User } from "../types/index.js";
 
 class UserService {
   private userModel: UserModel;

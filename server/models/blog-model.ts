@@ -1,5 +1,5 @@
-import { pool } from "../config/database";
-import { Blog, UpdateBlogData, CreateBlogData } from "../types";
+import { pool } from "../config/database.js";
+import { Blog, UpdateBlogData, CreateBlogData } from "../types/index.js";
 
 export class BlogModel {
   async getBlogs(): Promise<Blog[]> {

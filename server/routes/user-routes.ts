@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express';
-import UserService from '../services/user-service';
-import { requireAuth } from '../middlewares/auth';
-import { AuthenticatedRequest } from '../types';
+import UserService from '../services/user-service.js';
+import { requireAuth } from '../middlewares/auth.js';
+import { AuthenticatedRequest } from '../types/index.js';
 
 const userRouter: Router = express.Router();
 const userService = new UserService();

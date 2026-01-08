@@ -1,5 +1,5 @@
-import { pool } from "../config/database";
-import { User } from "../types";
+import { pool } from "../config/database.js";
+import { User } from "../types/index.js";
 
 export class UserModel {
   async getUser(id: string): Promise<User | null> {

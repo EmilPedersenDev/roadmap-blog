@@ -1,5 +1,5 @@
-import { BlogModel } from "../models/blog-model";
-import { Blog, CreateBlogData, UpdateBlogData } from "../types";
+import { BlogModel } from "../models/blog-model.js";
+import { Blog, CreateBlogData, UpdateBlogData } from "../types/index.js";
 
 class BlogService {
   private blogModel: BlogModel;

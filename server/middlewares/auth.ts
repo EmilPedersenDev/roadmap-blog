@@ -2,9 +2,8 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt, { JwtHeader, SigningKeyCallback } from 'jsonwebtoken'
 import jwksRsa from 'jwks-rsa'
-import { AuthenticatedRequest, User } from '../types';
-import { UserModel } from '../models/user-model';
-import UserService from '../services/user-service';
+import { AuthenticatedRequest, User } from '../types/index.js';
+import UserService from '../services/user-service.js';
 
 const jwksClient = jwksRsa({
   jwksUri: process.env.SUPABASE_JWT_JWKS_URL!,
