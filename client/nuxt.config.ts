@@ -2,13 +2,6 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  srcDir: 'client',
-  runtimeConfig: {
-    public: {
-      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
-      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
-    }
-  },
   // Static site generation (SSG)
   nitro: {
     prerender: {
