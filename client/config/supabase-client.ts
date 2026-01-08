@@ -13,8 +13,6 @@ export const getSupabaseClient = (): SupabaseClient => {
 
   const config = useRuntimeConfig()
 
-  console.log('getSupabaseClient', config.public.supabaseUrl, config.public.supabaseKey);
-
   if (!config.public.supabaseUrl || !config.public.supabaseKey) {
     throw new Error('Supabase env variables are not defined!')
   }

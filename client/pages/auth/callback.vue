@@ -36,7 +36,6 @@ const success = ref(false)
 
 onMounted(async () => {
   try {
-    debugger
     const hash = window.location.hash
     if (!hash) return
 
