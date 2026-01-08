@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
-import userRouter from './routes/user-routes';
-import blogRouter from './routes/blog-routes';
+import userRouter from './routes/user-routes.js';
+import blogRouter from './routes/blog-routes.js';
 
 const app = express();
 app.use(express.json());

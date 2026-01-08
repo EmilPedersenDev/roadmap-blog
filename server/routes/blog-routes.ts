@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express';
-import BlogService from '../services/blog-service';
-import { AuthenticatedRequest, Blog, CreateBlogData, UpdateBlogData } from '../types';
-import { requireAuth } from '../middlewares/auth';
+import BlogService from '../services/blog-service.js';
+import { AuthenticatedRequest, Blog, CreateBlogData, UpdateBlogData } from '../types/index.js';
+import { requireAuth } from '../middlewares/auth.js';
 
 const blogRouter: Router = express.Router();
 const blogService = new BlogService();
