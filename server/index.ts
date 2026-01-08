@@ -1,12 +1,18 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import userRouter from './routes/user-routes';
+import blogRouter from './routes/blog-routes';
 
 const app = express();
-const PORT = process.env.DATABASE_PORT || 3001;
+app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Hello from Express API' });
-});
+const PORT = process.env.PORT || 3001;
+
+const router = express.Router();
+router.use('/blogs', blogRouter);
+router.use('/users', userRouter);
+
+app.use('/api/v1', router);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
