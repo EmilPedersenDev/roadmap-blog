@@ -22,10 +22,6 @@
           </div>
         </header>
 
-        <div v-if="blog.excerpt" class="blog-excerpt">
-          <p>{{ blog.excerpt }}</p>
-        </div>
-
         <div class="blog-content">
           <p>{{ blog.content || 'No content available.' }}</p>
         </div>
@@ -35,36 +31,24 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const blogId = computed(() => route.params.id as string)
+import type { Blog } from '~/types'
 
-const blog = ref(null)
-const loading = ref(true)
+const route = useRoute()
+const { getBlog, loadingBlog } = useBlogStore()
+const blogId = computed(() => parseInt(route.params.id as string, 10))
+
+const blog = ref<Blog | null>(null)
 const error = ref<string | null>(null)
+
+const loading = computed(() => loadingBlog.value === blogId.value)
 
 onMounted(async () => {
   try {
-    loading.value = true
-    // TODO: Replace with actual API call
-    // const response = await $fetch(`/api/blogs/${blogId.value}`)
-    // blog.value = response
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // Example data - replace with actual fetch
-    blog.value = {
-      id: blogId.value,
-      title: 'Sample Blog Post',
-      excerpt: 'This is a sample excerpt',
-      content: 'This is the full content of the blog post. Replace this with actual content from your API.',
-      created_at: new Date().toISOString()
-    }
-  } catch (err) {
-    error.value = 'Failed to load blog post. Please try again later.'
+    const data = await getBlog(blogId.value)
+    blog.value = data
+  } catch (err: any) {
+    error.value = err.message || 'Failed to load blog post. Please try again later.'
     console.error('Error loading blog:', err)
-  } finally {
-    loading.value = false
   }
 })
 

@@ -5,7 +5,7 @@
         <p>Loading...</p>
       </div>
     </div>
-    <div v-else class="container">
+    <div v-else-if="!checkingAuth && isAuthenticated" class="container">
       <div class="page-header">
         <h1>Create Blog</h1>
         <NuxtLink to="/" class="back-button">← Back to Blogs</NuxtLink>
@@ -22,17 +22,6 @@
             placeholder="Enter blog title"
             class="form-input"
           />
-        </div>
-
-        <div class="form-group">
-          <label for="excerpt">Excerpt</label>
-          <textarea
-            id="excerpt"
-            v-model="form.excerpt"
-            rows="3"
-            placeholder="Enter a brief excerpt"
-            class="form-textarea"
-          ></textarea>
         </div>
 
         <div class="form-group">
@@ -61,7 +50,8 @@
 </template>
 
 <script setup lang="ts">
-const { isAuthenticated, loading } = useAuth()
+const { isAuthenticated, loading, user } = useAuth()
+const { createBlog } = useBlogStore()
 const route = useRoute()
 const checkingAuth = computed(() => loading.value)
 
@@ -75,26 +65,30 @@ watch(loading, async (isLoading) => {
 
 const form = ref({
   title: '',
-  excerpt: '',
   content: ''
 })
 
 const isSubmitting = ref(false)
 
 const handleSubmit = async () => {
+  if (!user.value) {
+    console.error('User not authenticated')
+    return
+  }
+
   isSubmitting.value = true
   try {
-    // TODO: Replace with actual API call
-    console.log('Creating blog:', form.value)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await createBlog({
+      title: form.value.title,
+      content: form.value.content,
+      user_id: user.value.id
+    })
     
     // Navigate to blogs page after successful creation
     navigateTo('/')
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating blog:', error)
-    alert('Failed to create blog. Please try again.')
+    alert(error.message || 'Failed to create blog. Please try again.')
   } finally {
     isSubmitting.value = false
   }

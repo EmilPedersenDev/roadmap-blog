@@ -5,35 +5,42 @@
         <h1>Blogs</h1>
         <NuxtLink to="/blogs/create" class="create-button">Create Blog</NuxtLink>
       </div>
-      
+
       <div class="blogs-list">
-        <div v-if="blogs.length === 0" class="empty-state">
-          <p>No blogs yet. Create your first blog post!</p>
-        </div>
-        <div v-else class="blog-cards">
-          <div 
-            v-for="blog in blogs" 
-            :key="blog.id" 
-            class="blog-card"
-            @click="navigateToBlog(blog.id)"
-          >
-            <h2 class="blog-title">{{ blog.title }}</h2>
-            <p class="blog-excerpt">{{ blog.excerpt || 'No excerpt available' }}</p>
-            <div class="blog-meta">
-              <span class="blog-date">{{ formatDate(blog.created_at) }}</span>
+        <ClientOnly>
+          <div v-if="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading blogs...</p>
+          </div>
+          <div v-else-if="blogs.length === 0" class="empty-state">
+            <p>No blogs yet. Create your first blog post!</p>
+          </div>
+          <div v-else class="blog-cards">
+            <div v-for="blog in blogs" :key="blog.id" class="blog-card" @click="navigateToBlog(blog.id)">
+              <h2 class="blog-title">{{ blog.title }}</h2>
+              <div class="blog-meta">
+                <span class="blog-date">{{ formatDate(blog.created_at) }}</span>
+              </div>
             </div>
           </div>
-        </div>
+          <template #fallback>
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <p>Loading blogs...</p>
+            </div>
+          </template>
+        </ClientOnly>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// TODO: Replace with actual API call
-const blogs = ref([
-  // Example data - replace with actual fetch
-])
+const { blogs, loading, fetchBlogs } = useBlogStore()
+
+onBeforeMount(async () => {
+  await fetchBlogs()
+})
 
 const navigateToBlog = (id: number) => {
   navigateTo(`/blogs/${id}`)
@@ -91,6 +98,32 @@ const formatDate = (date: string) => {
   margin-top: 2rem;
 }
 
+.loading-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+}
+
+.loading-state p {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.spinner {
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
@@ -143,4 +176,3 @@ const formatDate = (date: string) => {
   font-size: 0.875rem;
 }
 </style>
-
