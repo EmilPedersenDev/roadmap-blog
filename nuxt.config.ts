@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001'
     }
   },
   // Static site generation (SSG)
