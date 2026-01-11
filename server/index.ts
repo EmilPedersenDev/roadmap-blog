@@ -1,8 +1,9 @@
 import 'dotenv/config';
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import userRouter from './routes/user-routes.js';
 import blogRouter from './routes/blog-routes.js';
+import ErrorHandler from "./middlewares/error-handler.js";
 
 const app = express();
 
@@ -23,6 +24,9 @@ router.use('/blogs', blogRouter);
 router.use('/users', userRouter);
 
 app.use('/api/v1', router);
+
+app.use(ErrorHandler.handleError);
+process.on('uncaughtException', ErrorHandler.handleUncaughtError);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
