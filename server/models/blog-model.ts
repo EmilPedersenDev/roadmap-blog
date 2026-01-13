@@ -2,11 +2,23 @@ import { pool } from "../config/database.js";
 import { Blog, UpdateBlogData, CreateBlogData } from "../types/index.js";
 
 export class BlogModel {
-  async getBlogs(): Promise<Blog[]> {
-    const result = await pool.query<Blog>(
-      `SELECT * FROM blogs ORDER BY created_at DESC`
+  async getBlogs(offset: number, limit: number): Promise<{ blogs: Blog[]; total: number }> {
+    // Get total count
+    const countResult = await pool.query<{ count: string }>(
+      `SELECT COUNT(*) as count FROM blogs`
     );
-    return result.rows;
+    const total = parseInt(countResult.rows[0].count, 10);
+
+    // Get paginated blogs
+    const result = await pool.query<Blog>(
+      `SELECT * FROM blogs ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+
+    return {
+      blogs: result.rows,
+      total
+    };
   }
 
   async getBlogById(id: number): Promise<Blog | null> {

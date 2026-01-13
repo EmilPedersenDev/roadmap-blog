@@ -147,7 +147,6 @@ const handleLogin = async () => {
     }
 
     if (data.user && data.session) {
-      console.log('data.session', data.session)
       // Update global auth state with the session from response
       await setSession(data.session)
       

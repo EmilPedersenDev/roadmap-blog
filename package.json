@@ -16,6 +16,7 @@
     "migrate": "node-pg-migrate"
   },
   "dependencies": {
+    "@nuxt/ui": "^4.3.0",
     "@supabase/supabase-js": "^2.89.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -24,6 +25,7 @@
     "jwks-rsa": "^3.2.0",
     "nuxt": "^4.2.2",
     "pg": "^8.16.3",
+    "tailwindcss": "^4.1.18",
     "vue": "^3.5.25",
     "vue-router": "^4.6.4",
     "winston": "^3.19.0"

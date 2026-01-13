@@ -8,8 +8,8 @@ class BlogService {
     this.blogModel = new BlogModel();
   }
 
-  async getBlogs(): Promise<Blog[]> {
-    return this.blogModel.getBlogs();
+  async getBlogs(offset: number, limit: number): Promise<{ blogs: Blog[]; total: number }> {
+    return this.blogModel.getBlogs(offset, limit);
   }
 
   async getBlogById(id: number): Promise<Blog | null> {
