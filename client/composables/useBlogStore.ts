@@ -6,22 +6,33 @@ export const useBlogStore = () => {
   // Global state for blogs list (cached in memory)
   const blogs = useState<Blog[]>('blogs', () => [])
 
+  // Pagination state
+  const currentPage = useState<number>('blogsCurrentPage', () => 1)
+  const pageSize = useState<number>('blogsPageSize', () => 10)
+  const total = useState<number>('blogsTotal', () => 0)
+
   // Loading states
   const loading = useState<boolean>('blogsLoading', () => false)
   const loadingBlog = useState<number | null>('loadingBlog', () => null)
 
-  // Fetch all blogs (with caching - only fetches if cache is empty or force refresh)
-  const fetchBlogs = async (force = false) => {
-    // Return cached data if available and not forcing refresh
-    if (!force && blogs.value.length > 0) {
+  // Fetch blogs with pagination
+  const fetchBlogs = async (page: number = 1, limit: number = 10, force = false) => {
+    const offset = (page - 1) * limit
+
+    // Always fetch - different pages have different data, so we can't cache across pages
+    // Only skip fetch if it's the exact same page, same size, has data, and not forcing
+    if (!force && currentPage.value === page && pageSize.value === limit && blogs.value.length > 0) {
       return blogs.value
     }
 
     try {
       loading.value = true
-      const data = await get<Blog[]>('/blogs')
-      blogs.value = data
-      return data
+      const response = await get<{ blogs: Blog[]; total: number }>(`/blogs?offset=${offset}&limit=${limit}`)
+      blogs.value = response.blogs
+      total.value = response.total
+      currentPage.value = page
+      pageSize.value = limit
+      return response.blogs
     } catch (error) {
       console.error('Error fetching blogs:', error)
       throw error
@@ -67,8 +78,9 @@ export const useBlogStore = () => {
   const createBlog = async (blogData: { title: string; content: string; user_id: string }): Promise<Blog> => {
     try {
       const data = await post<Blog>('/blogs', blogData)
-      // Add to blogs list (prepend to show newest first)
-      blogs.value.unshift(data)
+      // Reset to first page and refresh to show the new blog
+      currentPage.value = 1
+      await fetchBlogs(1, pageSize.value, true)
       return data
     } catch (error) {
       console.error('Error creating blog:', error)
@@ -118,6 +130,9 @@ export const useBlogStore = () => {
     blogs: readonly(blogs),
     loading: readonly(loading),
     loadingBlog: readonly(loadingBlog),
+    currentPage: readonly(currentPage),
+    pageSize: readonly(pageSize),
+    total: readonly(total),
 
     // Methods
     fetchBlogs,

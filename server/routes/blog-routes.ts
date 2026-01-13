@@ -7,12 +7,15 @@ import { ApiError } from '../common/error.js';
 
 const blogRouter: Router = express.Router();
 const blogService = new BlogService();
-
+const DEFAULT_OFFSET = 0;
+const DEFAULT_LIMIT = 10;
 
 blogRouter.route('/').get(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const blogs: Blog[] = await blogService.getBlogs();
-    res.json(blogs);
+    const offset = Number(req.query.offset) || DEFAULT_OFFSET;
+    const limit = Number(req.query.limit) || DEFAULT_LIMIT;
+    const result = await blogService.getBlogs(offset, limit);
+    res.json(result);
   } catch (error) {
     next(error);
   }
