@@ -4,6 +4,7 @@ import cors from 'cors';
 import userRouter from './routes/user-routes.js';
 import blogRouter from './routes/blog-routes.js';
 import ErrorHandler from "./middlewares/error-handler.js";
+import { globalRateLimiter } from './middlewares/rate-limiter.js';
 
 const app = express();
 
@@ -16,6 +17,11 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// Apply global rate limiter
+if (process.env.NODE_ENV === 'production') {
+  app.use(globalRateLimiter);
+}
 
 const PORT = process.env.PORT || 3001;
 
