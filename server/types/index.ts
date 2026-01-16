@@ -18,11 +18,20 @@ export interface UpdateBlogData {
   content?: string;
 }
 
+export enum Tier {
+  FREE = 'free',
+  PREMIUM = 'premium',
+}
+
 export interface User {
   id: string;
   email: string;
   first_name: string | null;
   last_name: string | null;
+  tier?: Tier;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  stripe_subscription_status?: string | null;
 }
 
 import { Request } from 'express';

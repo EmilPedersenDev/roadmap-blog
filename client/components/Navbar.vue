@@ -5,6 +5,13 @@
       <div class="navbar-links">
         <NuxtLink to="/" class="navbar-link">Blogs</NuxtLink>
         <NuxtLink 
+          v-if="isAuthenticated"
+          to="/profile" 
+          class="navbar-link"
+        >
+          Profile
+        </NuxtLink>
+        <NuxtLink 
           v-if="!isAuthenticated"
           to="/login" 
           class="login-button"
