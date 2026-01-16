@@ -5,6 +5,7 @@ import userRouter from './routes/user-routes.js';
 import blogRouter from './routes/blog-routes.js';
 import ErrorHandler from "./middlewares/error-handler.js";
 import { globalRateLimiter } from './middlewares/rate-limiter.js';
+import subscriptionRouter from './routes/subscription-routes.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ const PORT = process.env.PORT || 3001;
 const router = express.Router();
 router.use('/blogs', blogRouter);
 router.use('/users', userRouter);
+router.use('/subscriptions', subscriptionRouter);
 
 app.use('/api/v1', router);
 
