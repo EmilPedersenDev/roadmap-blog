@@ -5,6 +5,9 @@ export default defineNuxtConfig({
   srcDir: 'client',
   css: ['~/assets/css/main.css'],
   modules: ['@nuxt/ui'],
+  colorMode: {
+    preference: 'dark'
+  },
   runtimeConfig: {
     public: {
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,

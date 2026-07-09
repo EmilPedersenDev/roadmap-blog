@@ -1,52 +1,87 @@
 <template>
-  <div class="create-blog-page">
-    <div v-if="checkingAuth" class="container">
-      <div class="loading-state">
-        <p>Loading...</p>
-      </div>
-    </div>
-    <div v-else-if="!checkingAuth && isAuthenticated" class="container">
-      <div class="page-header">
-        <h1>Create Blog</h1>
-        <NuxtLink to="/" class="back-button">← Back to Blogs</NuxtLink>
+  <UContainer class="py-8">
+    <ClientOnly>
+      <div v-if="checkingAuth" class="flex flex-col items-center justify-center py-16">
+        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500 mb-4" />
+        <p class="text-white">Loading...</p>
       </div>
 
-      <form @submit.prevent="handleSubmit" class="blog-form">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input
-            id="title"
-            v-model="form.title"
-            type="text"
-            required
-            placeholder="Enter blog title"
-            class="form-input"
-          />
+      <div v-else-if="!checkingAuth && isAuthenticated">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-4xl font-bold text-white">Create Blog</h1>
+          <UButton
+            to="/"
+            variant="ghost"
+            color="neutral"
+            icon="i-heroicons-arrow-left"
+            class="text-white hover:text-primary-500"
+          >
+            Back to Blogs
+          </UButton>
         </div>
 
-        <div class="form-group">
-          <label for="content">Content</label>
-          <textarea
-            id="content"
-            v-model="form.content"
-            rows="15"
-            required
-            placeholder="Write your blog content here..."
-            class="form-textarea"
-          ></textarea>
-        </div>
+        <UCard class="bg-charcoal-900 border-charcoal-500">
+          <UForm @submit="handleSubmit" class="space-y-6 flex flex-col items-center justify-center">
+            <UFormGroup label="Title" name="title" required>
+              <UInput
+                v-model="form.title"
+                placeholder="Enter blog title"
+                size="lg"
+                class="bg-charcoal-800 border-charcoal-500 text-white"
+                required
+              />
+            </UFormGroup>
 
-        <div class="form-actions">
-          <button type="button" @click="handleCancel" class="cancel-button">
-            Cancel
-          </button>
-          <button type="submit" class="submit-button" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Creating...' : 'Create Blog' }}
-          </button>
+            <UFormGroup label="Content" name="content" required class="w-full flex flex-col items-center justify-center">
+              <UTextarea
+                v-model="form.content"
+                placeholder="Write your blog content here..."
+                :rows="15"
+                size="lg"
+                class="bg-charcoal-800 border-charcoal-500 text-white w-1/2"
+                required
+              />
+            </UFormGroup>
+
+            <UAlert
+              v-if="error"
+              color="error"
+              variant="soft"
+              :title="error"
+              class="mb-4"
+            />
+
+            <div class="flex justify-center gap-4 pt-4 border-t border-charcoal-500">
+              <UButton
+                type="button"
+                @click="handleCancel"
+                variant="ghost"
+                color="neutral"
+                class="text-white"
+              >
+                Cancel
+              </UButton>
+              <UButton
+                type="submit"
+                color="primary"
+                :loading="isSubmitting"
+                :disabled="isSubmitting"
+              >
+                {{ isSubmitting ? 'Creating...' : 'Create Blog' }}
+              </UButton>
+            </div>
+          </UForm>
+        </UCard>
+      </div>
+
+      <template #fallback>
+        <div class="flex flex-col items-center justify-center py-16">
+          <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500 mb-4" />
+          <p class="text-white">Loading...</p>
         </div>
-      </form>
-    </div>
-  </div>
+      </template>
+    </ClientOnly>
+  </UContainer>
 </template>
 
 <script setup lang="ts">
@@ -69,13 +104,15 @@ const form = ref({
 })
 
 const isSubmitting = ref(false)
+const error = ref<string | null>(null)
 
 const handleSubmit = async () => {
   if (!user.value) {
-    console.error('User not authenticated')
+    error.value = 'User not authenticated'
     return
   }
 
+  error.value = null
   isSubmitting.value = true
   try {
     await createBlog({
@@ -86,9 +123,9 @@ const handleSubmit = async () => {
     
     // Navigate to blogs page after successful creation
     navigateTo('/')
-  } catch (error: any) {
-    console.error('Error creating blog:', error)
-    alert(error.message || 'Failed to create blog. Please try again.')
+  } catch (err: any) {
+    console.error('Error creating blog:', err)
+    error.value = err.message || 'Failed to create blog. Please try again.'
   } finally {
     isSubmitting.value = false
   }
@@ -99,131 +136,4 @@ const handleCancel = () => {
 }
 </script>
 
-<style scoped>
-.create-blog-page {
-  min-height: calc(100vh - 80px);
-  padding: 2rem 0;
-}
-
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #1f2937;
-}
-
-.back-button {
-  color: #4b5563;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.back-button:hover {
-  color: #3b82f6;
-}
-
-.blog-form {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 2rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-  font-family: inherit;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-textarea {
-  resize: vertical;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.cancel-button {
-  padding: 0.75rem 1.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  background: white;
-  color: #374151;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.cancel-button:hover {
-  border-color: #9ca3af;
-  background-color: #f9fafb;
-}
-
-.submit-button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  background-color: #3b82f6;
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.submit-button:hover:not(:disabled) {
-  background-color: #2563eb;
-}
-
-.submit-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.loading-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #6b7280;
-}
-</style>
 

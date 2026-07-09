@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="min-h-screen bg-charcoal-900 text-white">
     <UApp>
       <Navbar />
       <NuxtPage />

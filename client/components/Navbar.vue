@@ -1,26 +1,42 @@
 <template>
-  <nav class="navbar">
-    <div class="navbar-container">
-      <NuxtLink to="/" class="navbar-brand">Roadmap Blog</NuxtLink>
-      <div class="navbar-links">
-        <NuxtLink to="/" class="navbar-link">Blogs</NuxtLink>
+  <header class="border-b border-charcoal-500 bg-charcoal-900">
+    <UContainer>
+      <div class="flex items-center justify-between h-16">
         <NuxtLink 
-          v-if="!isAuthenticated"
-          to="/login" 
-          class="login-button"
+          to="/" 
+          class="flex items-center font-bold text-xl text-charcoal-100 hover:text-primary-500 transition-colors"
         >
-          Login
+          Roadmap Blog
         </NuxtLink>
-        <button
-          v-else
-          @click="handleLogout"
-          class="login-button logout-button"
-        >
-          Logout
-        </button>
+
+        <nav class="flex items-center gap-6">
+          <NuxtLink 
+            to="/" 
+            class="text-charcoal-200 hover:text-primary-500 font-medium transition-colors"
+            active-class="text-primary-500"
+          >
+            Blogs
+          </NuxtLink>
+
+          <NuxtLink
+            v-if="!isAuthenticated"
+            to="/login"
+            class="px-4 py-2 rounded-md bg-primary-500 text-black font-medium hover:bg-primary-400 transition-colors"
+          >
+            Login
+          </NuxtLink>
+          <NuxtLink
+            v-else
+            to="/"
+            @click.prevent="handleLogout"
+            class="px-4 py-2 rounded-md bg-charcoal-500 text-charcoal-100 font-medium hover:bg-charcoal-400 transition-colors"
+          >
+            Logout
+          </NuxtLink>
+        </nav>
       </div>
-    </div>
-  </nav>
+    </UContainer>
+  </header>
 </template>
 
 <script setup lang="ts">
@@ -31,80 +47,4 @@ const handleLogout = async () => {
   await navigateTo('/')
 }
 </script>
-
-<style scoped>
-.navbar {
-  background-color: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 1rem 0;
-}
-
-.navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.navbar-brand {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1f2937;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.navbar-brand:hover {
-  color: #3b82f6;
-}
-
-.navbar-links {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.navbar-link {
-  color: #4b5563;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-  padding: 0.5rem 0;
-}
-
-.navbar-link:hover {
-  color: #3b82f6;
-}
-
-.navbar-link.router-link-active {
-  color: #3b82f6;
-}
-
-.login-button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s;
-  border: none;
-  cursor: pointer;
-  font-size: 0.875rem;
-  background-color: #3b82f6;
-  color: white;
-}
-
-.login-button:hover {
-  background-color: #2563eb;
-}
-
-.logout-button {
-  background-color: #6b7280;
-}
-
-.logout-button:hover {
-  background-color: #4b5563;
-}
-</style>
 
